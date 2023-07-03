@@ -15,7 +15,6 @@ def scrap_url_book(url_request):
 
 
 def scrap_book(url_book):
-    # to get the info of one book (place in another file affter and call it in the main)
     soup = scrap_url_book(url_book) #titre
     product_category = get_category(soup)#titre de la categorie
     img_url = soup.select('img')[0] #img
