@@ -95,7 +95,7 @@ def scrap_book(url_book):
                   'price_excluding_tax', 'number_available', 'product_description', 'category', 'review_rating',
                   'image_url']
     if Path(f'ScrapedData/{product_category}.csv').is_file():
-        with open(f'ScrapedData/{product_category}.csv', 'a', encoding="utf-8-sig", newline="") as file:
+        with open(f'ScrapedData/{product_category}.csv', 'a', encoding="utf-8", newline="") as file:
             reader = csv.DictReader(file, fieldnames=fieldnames)
             writer = csv.DictWriter(file, fieldnames=fieldnames)
             writer.writerow(book_infos)
@@ -106,7 +106,7 @@ def scrap_book(url_book):
         if not os.path.exists(dir):
             os.mkdir(dir)
 
-        with open(f'ScrapedData/{product_category}.csv', 'w', newline='') as file:
+        with open(f'ScrapedData/{product_category}.csv', 'a', encoding="utf-8", newline="") as file:
             reader = csv.DictReader(file, fieldnames=fieldnames)
             writer = csv.DictWriter(file, fieldnames=fieldnames)
             writer.writeheader()
