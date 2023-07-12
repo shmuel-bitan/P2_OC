@@ -5,44 +5,53 @@ import csv
 from pathlib import Path
 import os
 
-main_url = 'https://books.toscrape.com/'
-url_category = input("url de la categorie ")
+url = 'https://books.toscrape.com/'
 
-def get_all_categories(url):
-    response = requests.get(url)
-    only_section = SoupStrainer('section')
-    soup = BeautifulSoup(response.content, 'html.parser')
-    array_of_a = soup.select("h3 > a")
-    array_books_url = []
-    for el in array_of_a:
-        array_books_url.append(el["href"].replace("../../..", "http://books.toscrape.com/catalogue"))
-        # print(array_books_url)
-    return array_books_url
 
-def scrap_category(url_categoty):
+def multiple_pages(url_category):
+    count_book = 0
+    scrap_category(url_category)
+    product_list = get_books_url(url_category)
+    for product in product_list:
+        count_book = count_book + 1
+        if count_book >= 20:
+            new_count = 0
+            url_category = url_category.replace("index.html", "page-2.html")
+            print(url_category)
+            scrap_category(url_category)
+            product_list = get_books_url(url_category)
+            for product in product_list:
+                new_count = new_count + 1
+            if 20 <= new_count:
+                new_url = url_category.replace("page-2.html", "page-3.html")
+                print(new_url)
+                scrap_category(new_url)
+
+
+def scrap_category(url_category):
     product_list = get_books_url(url_category)
     for product in product_list:
         scrap_book(product)
-    return url_categoty
+    print("fin du scrapping de l url " , url_category)
+    return url_category
 
 
-def scrap_url_book(url_request):
+def scrap_url(url_request):
     response = requests.get(url_request)
-    if (response.ok):
+    if response.ok:
         soup = BeautifulSoup(response.content, 'html.parser')
 
     return soup
 
 
 def scrap_book(url_book):
-    soup = scrap_url_book(url_book)  # titre
+    soup = scrap_url(url_book)  # titre
     product_category = get_category(soup)  # titre de la categorie
     img_url = soup.select('img')[0]  # img
-    book_img_link = main_url + img_url.get('src').strip('../../')  # url de l image (pour la recuperer sur le site
+    book_img_link = url + img_url.get('src').strip('../../')  # url de l image (pour la recuperer sur le site
     book_review_rate = scrub_review(soup)
     book_title = soup.find('h1').text
     book_product_description = soup.select('article > p ')[0].text
-
     product_info = soup.select('table.table')  # recup de la table pour en prendre tout les elements
     for info in product_info:
         book_universal_product_code = info.select('tr > td')[0].text
@@ -76,7 +85,7 @@ def scrap_book(url_book):
         # ● image_url
 
     }
-    test = product_category
+    # print(book_infos)
     '''with open(f'test.csv', 'w', newline='') as file:
         writer = csv.writer(file)
         writer.writerow(book_infos)
@@ -97,13 +106,13 @@ def scrap_book(url_book):
         if not os.path.exists(dir):
             os.mkdir(dir)
 
-        with open(f'ScrapedData/{test}.csv', 'w', newline='') as file:
+        with open(f'ScrapedData/{product_category}.csv', 'w', newline='') as file:
             reader = csv.DictReader(file, fieldnames=fieldnames)
             writer = csv.DictWriter(file, fieldnames=fieldnames)
             writer.writeheader()
             writer.writerow(book_infos)
 
-    print(book_infos)
+    # print(book_infos)
     return book_infos
 
 
@@ -153,7 +162,22 @@ def get_books_url(url):
     return array_books_url
 
 
+def get_all_categories(url):
+    soup = scrap_url(url)
+    get_first_ul = soup.find('ul', {"class": "nav-list"})
+    get_ul = get_first_ul.find('ul')
+    list_books_category = get_ul.find_all('li')
+    array_categories_url = []
+    for li in list_books_category:
+        category_name_in_link = li.find('a')['href']
+        url_category = url + category_name_in_link
+        multiple_pages(url_category)
+    return array_categories_url
 
-#scrap_book(url_category)
-scrap_category(url_category)
-# get_books_url(url_category)
+
+get_all_categories(url)
+
+# scrap_book(url_category) # pour un seul livre
+# scrap_category(url_category) # pour toute la categorie
+# get_books_url(url_category) # recuperer tout les url des  livres d une page categorie
+# multiple_pages(url_category) # recuperer tout les livre avec des pages multiples
