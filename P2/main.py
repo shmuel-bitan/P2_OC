@@ -7,6 +7,8 @@ import os
 
 url = 'https://books.toscrape.com/'
 
+# url_category = input("url")
+
 
 def multiple_pages(url_category):
     count_book = 0
@@ -17,14 +19,14 @@ def multiple_pages(url_category):
         if count_book >= 20:
             new_count = 0
             url_category = url_category.replace("index.html", "page-2.html")
-            print(url_category)
+            print("on scrap l url de la 2 eme page ", url_category)
             scrap_category(url_category)
             product_list = get_books_url(url_category)
             for product in product_list:
                 new_count = new_count + 1
             if 20 <= new_count:
                 new_url = url_category.replace("page-2.html", "page-3.html")
-                print(new_url)
+                print("on scrap l url de la 3 eme page ", new_url)
                 scrap_category(new_url)
 
 
@@ -32,7 +34,7 @@ def scrap_category(url_category):
     product_list = get_books_url(url_category)
     for product in product_list:
         scrap_book(product)
-    print("fin du scrapping de l url " , url_category)
+    print("fin du scrapping de l url ", url_category)
     return url_category
 
 
@@ -41,7 +43,7 @@ def scrap_url(url_request):
     if response.ok:
         soup = BeautifulSoup(response.content, 'html.parser')
 
-    return soup
+        return soup
 
 
 def scrap_book(url_book):
@@ -53,6 +55,11 @@ def scrap_book(url_book):
     book_title = soup.find('h1').text
     book_product_description = soup.select('article > p ')[0].text
     product_info = soup.select('table.table')  # recup de la table pour en prendre tout les elements
+    book_universal_product_code = ""
+    book_price = ""
+    book_price_tax = ""
+    book_availability = ""
+
     for info in product_info:
         book_universal_product_code = info.select('tr > td')[0].text
         book_price = clean_price(info.select('tr > td')[2].text)
@@ -175,9 +182,10 @@ def get_all_categories(url):
     return array_categories_url
 
 
-get_all_categories(url)
+# get_all_categories(url)
 
-# scrap_book(url_category) # pour un seul livre
+# scrap_book(url_category)  # pour un seul livre
 # scrap_category(url_category) # pour toute la categorie
 # get_books_url(url_category) # recuperer tout les url des  livres d une page categorie
 # multiple_pages(url_category) # recuperer tout les livre avec des pages multiples
+#faire l etl et telecharger l image
