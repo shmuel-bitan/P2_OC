@@ -11,8 +11,8 @@ web scrapping using python
 
 ### 2. Installation des packages 
 
-    pip<version> install -r requirements.txt
+    pip<version> install -r requirement.txt
 
 ## 3. Execution du script
 
-    python<version> main.py
+    python<version> P2/main.py
