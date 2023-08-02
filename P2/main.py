@@ -7,9 +7,8 @@ import os
 
 url = 'https://books.toscrape.com/'
 
-# url_category = input("url")
 
-
+# url_category= input("url")
 def multiple_pages(url_category):
     count_book = 0
     scrap_category(url_category)
@@ -52,7 +51,7 @@ def scrap_book(url_book):
     img_url = soup.select('img')[0]  # img
     book_img_link = url + img_url.get('src').strip('../../')  # url de l image (pour la recuperer sur le site
     book_review_rate = scrub_review(soup)
-    book_title = soup.find('h1').text
+    book_title = clean_title(soup.find('h1').text)
     book_product_description = soup.select('article > p ')[0].text
     product_info = soup.select('table.table')  # recup de la table pour en prendre tout les elements
     book_universal_product_code = ""
@@ -66,7 +65,7 @@ def scrap_book(url_book):
         book_price_tax = clean_price(info.select('tr > td')[3].text)
         book_availability = clean_count(info.select('tr > td')[5].text)
 
-        # for the other infos create a function to clean unused data ( like the symbols in price etc)
+        # fonction pour clean le price et data a faire
 
     book_infos = {
         "product_page_url": url_book,
@@ -92,11 +91,13 @@ def scrap_book(url_book):
         # ● image_url
 
     }
-    # print(book_infos)
-    '''with open(f'test.csv', 'w', newline='') as file:
-        writer = csv.writer(file)
-        writer.writerow(book_infos)
-    '''
+    pictures = os.path.join("pictures")
+    if not os.path.exists(pictures):
+        os.mkdir(pictures)
+
+    with open(f'pictures/{book_title}.jpg', 'wb') as f:
+        response = requests.get(book_img_link)
+        f.write(response.content)
 
     fieldnames = ['product_page_url', 'universal_product_code', 'title', 'price_including_tax',
                   'price_excluding_tax', 'number_available', 'product_description', 'category', 'review_rating',
@@ -136,6 +137,11 @@ def clean_price(price):
     return price
 
 
+def clean_title(book_title):
+    book_title = re.sub('/', '_', book_title)
+    return book_title
+
+
 def clean_count(nb_available):
     # cleana the useless data
     res = int(re.search(r'\d+', nb_available)[0])
@@ -143,7 +149,7 @@ def clean_count(nb_available):
 
 
 def scrub_review(soup):
-    ''' Conversion du rating en lettre par un chiffre '''
+    # Conversion du rating en lettre par un chiffre
 
     review_rating_book = soup.find('p', class_='star-rating').get('class')[1]
     switcher = {
@@ -182,10 +188,10 @@ def get_all_categories(url):
     return array_categories_url
 
 
-# get_all_categories(url)
-
+if __name__ == "__main__":
+    get_all_categories(url)
+# get_all_categories(url) # pour tout le site
 # scrap_book(url_category)  # pour un seul livre
 # scrap_category(url_category) # pour toute la categorie
 # get_books_url(url_category) # recuperer tout les url des  livres d une page categorie
 # multiple_pages(url_category) # recuperer tout les livre avec des pages multiples
-#faire l etl et telecharger l image
