@@ -24,9 +24,55 @@ def multiple_pages(url_category):
             for product in product_list:
                 new_count = new_count + 1
             if 20 <= new_count:
+                new_count = 0
                 new_url = url_category.replace("page-2.html", "page-3.html")
                 print("on scrap l url de la 3 eme page ", new_url)
                 scrap_category(new_url)
+                product_list = get_books_url(url_category)
+                for product in product_list:
+                    new_count = new_count + 1
+                if 20 <= new_count:
+                    new_count = 0
+                    new_url = url_category.replace("page-3.html", "page-4.html")
+                    print("on scrap l url de la 4 eme page ", new_url)
+                    scrap_category(new_url)
+                    product_list = get_books_url(url_category)
+                    for product in product_list:
+                        new_count = new_count + 1
+                    if 20 <= new_count:
+                        new_count = 0
+                        new_url = url_category.replace("page-4.html", "page-5.html")
+                        print("on scrap l url de la 5 eme page ", new_url)
+                        scrap_category(new_url)
+                        product_list = get_books_url(url_category)
+                        for product in product_list:
+                            new_count = new_count + 1
+                        if 20 <= new_count:
+                            new_count = 0
+                            new_url = url_category.replace("page-5.html", "page-6.html")
+                            print("on scrap l url de la 6 eme page ", new_url)
+                            scrap_category(new_url)
+                            product_list = get_books_url(url_category)
+                            for product in product_list:
+                                new_count = new_count + 1
+                            if 20 <= new_count:
+                                new_count = 0
+                                new_url = url_category.replace("page-6.html", "page-7.html")
+                                print("on scrap l url de la 7 eme page ", new_url)
+                                scrap_category(new_url)
+                                product_list = get_books_url(url_category)
+                                for product in product_list:
+                                    new_count = new_count + 1
+                                if 20 <= new_count:
+                                    new_count = 0
+                                    new_url = url_category.replace("page-7.html", "page-8.html")
+                                    print("on scrap l url de la 8 eme page ", new_url)
+                                    scrap_category(new_url)
+                                    product_list = get_books_url(url_category)
+                                    for product in product_list:
+                                        new_count = new_count + 1
+
+
 
 
 def scrap_category(url_category):
@@ -46,7 +92,7 @@ def scrap_url(url_request):
 
 
 def scrap_book(url_book):
-    soup = scrap_url(url_book)  # titre
+    soup = scrap_url(url_book)
     product_category = get_category(soup)  # titre de la categorie
     img_url = soup.select('img')[0]  # img
     book_img_link = url + img_url.get('src').strip('../../')  # url de l image (pour la recuperer sur le site
